@@ -291,7 +291,8 @@ RCT_CUSTOM_VIEW_PROPERTY(torchMode, NSInteger, RCTCamera) {
 
 RCT_CUSTOM_VIEW_PROPERTY(keepAwake, BOOL, RCTCamera) {
   BOOL enabled = [RCTConvert BOOL:json];
-  [UIApplication sharedApplication].idleTimerDisabled = enabled;
+  UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+  application.idleTimerDisabled = enabled;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(mirrorImage, BOOL, RCTCamera) {

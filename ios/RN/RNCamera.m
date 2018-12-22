@@ -51,7 +51,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         self.previewLayer.needsDisplayOnBoundsChange = YES;
 #endif
         self.paused = NO;
-        [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
+        
+        UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+        [self changePreviewOrientation:application.statusBarOrientation];
         [self initializeCaptureSessionInput];
         [self startSession];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -405,7 +407,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
             CGImageRef takenCGImage = takenImage.CGImage;
             CGSize previewSize;
-            if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
+            UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+            if (UIInterfaceOrientationIsPortrait([application statusBarOrientation])) {
                 previewSize = CGSizeMake(self.previewLayer.frame.size.height, self.previewLayer.frame.size.width);
             } else {
                 previewSize = CGSizeMake(self.previewLayer.frame.size.width, self.previewLayer.frame.size.height);
@@ -522,7 +525,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         }
     }
 
-    [self updateSessionAudioIsMuted:[options[@"mute"] boolValue]];
+    [self updateSessionAudioIsMuted:!!options[@"mute"]];
 
     AVCaptureConnection *connection = [self.movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
     if (self.videoStabilizationMode != 0) {
@@ -682,7 +685,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     __block UIInterfaceOrientation interfaceOrientation;
 
     void (^statusBlock)() = ^() {
-        interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+        UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+        interfaceOrientation = [application statusBarOrientation];
     };
     if ([NSThread isMainThread]) {
         statusBlock();
@@ -804,7 +808,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)orientationChanged:(NSNotification *)notification
 {
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+    UIInterfaceOrientation orientation = [application statusBarOrientation];
     [self changePreviewOrientation:orientation];
 }
 

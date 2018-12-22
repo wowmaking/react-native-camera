@@ -29,9 +29,11 @@
 - (void)setOrientation:(NSInteger)orientation
 {
   [self.manager changeOrientation:orientation];
+    
+  UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
 
   if (orientation == RCTCameraOrientationAuto) {
-    [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
+      [self changePreviewOrientation:application == nil ? UIInterfaceOrientationUnknown : application.statusBarOrientation];
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification  object:nil];
   }
   else {
@@ -75,7 +77,8 @@
     _onFocusChanged = NO;
     _defaultOnFocusComponent = YES;
     _onZoomChanged = NO;
-    _previousIdleTimerDisabled = [UIApplication sharedApplication].idleTimerDisabled;
+    UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+    _previousIdleTimerDisabled = application.idleTimerDisabled;
   }
   return self;
 }
@@ -104,12 +107,14 @@
 {
   [super removeFromSuperview];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-  [UIApplication sharedApplication].idleTimerDisabled = _previousIdleTimerDisabled;
+  UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+  application.idleTimerDisabled = _previousIdleTimerDisabled;
   [self.manager stopSession];
 }
 
 - (void)orientationChanged:(NSNotification *)notification{
-  UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+  UIApplication *application = [UIApplication performSelector:@selector(sharedApplication)];
+  UIInterfaceOrientation orientation = [application statusBarOrientation];
   [self changePreviewOrientation:orientation];
 }
 
